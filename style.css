@@ -4,13 +4,13 @@
     box-sizing: border-box;
 }
 
-:root{
+:root{ /*Criando as variaveis de cor e texto-para facilitar no CSS*/
     font-size: 62.5%;
     --text-color:#303030;
     --ff-primary:'Poppins', sans-serif;
 
     --hue: 194;
-    --primary-color: hsl(var(--hue), 100%, 63%);
+    --primary-color: hsl(var(--hue), 100%, 63%); 
 }
 
 body{
@@ -28,15 +28,15 @@ button{
 
 }
 
-.sr-only{
+.sr-only{ /*Classe para fazeer as coisas sumirem, forçando o sumiço*/
    position: absolute;
    width: 1px;
    height: 1px;
    padding: 0;
    margin: -1px; 
-   overflow: hidden;
+   overflow: hidden; /*Deixa dentro do espaço da class*/
    clip: rect(0,0,0,0);
-   white-space: nowrap;
+   white-space: nowrap; /*Tira Quebra de linha*/
    border-width: 0;
 }
 

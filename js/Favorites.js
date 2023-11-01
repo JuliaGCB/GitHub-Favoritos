@@ -1,34 +1,44 @@
+export class GithubUser{
+    static search(username){
+        const endpoint = `https://api.github.com/users/${username}`
+
+        return fetch(endpoint) //retornando uma promessa
+        .then(data => data.json()) //transformando em Json
+        .then(({ login, name, public_repos, followers })  => ({
+            login, //dados que vao seer mostrados
+            name,
+            public_repos,
+            followers
+        })) //desestruturei o then.
+    }
+}
+
 // class que vai conter a logica dos dados
 //como os dados serão estruturados
 export class Favorites{
     constructor (root) {
         this.root = document.querySelector(root);
         this.load()
+
+        GithubUser.search('maykbrito').then(user => console.log(user)) // retornando os dados da promessa
     }
 
     load(){ //vai ser carregado
-        this.entries = [
-            {
-            login : 'JuliaGCB',
-            name: " Julia Campos",
-            public_repos: '76',
-            followers: '20'
-           },
-           {
-            login : 'diego3g',
-            name: "  Diego Fernandez",
-            public_repos: '76',
-            followers: '20'
-           }
-        ]
-
+        this.entries = JSON.parse( localStorage.getItem('@github-favorites:')) || [] //Json.parce() vai transformar no verdadeiro valor '[]' transforma em []
     }
 
-    delete(user) { //vai filtrar o arry se não for verdadeiro ele vai apagar
+    async add(username){ // vai buscar o username no github
+        const user = await GithubUser.search(username) //await é agurando uma promessa || Aqui ele vai aguardar essa promessa na linha dele
+
+        console.log(user)
+    }
+
+    delete(user) { //vai filtrar o arry se não verdadeiro ele vai apagar
         const filteredEntries = this.entries
           .filter(entry => entry.login  !== user.login) //se o entry não for igual o user.login vai ser apagaro
 
-        console.log(filteredEntries)
+        this.entries = filteredEntries
+        this.update()
     }
 }
 //classe que vai criar a visualização e eventos do HTMl
@@ -40,8 +50,17 @@ export class FavoritesView extends Favorites{
 
         
         this.update()
+        this.onadd()
     }
+    
+    onadd(){
+        const addButton = this.root.querySelector('.search button');
+        addButton.onclick = () => {
+            const { value } = this.root.querySelector('.search input');
 
+            this.add(value)
+        }
+    }
     update(){ //fazer aparecer o html
         this.removeAllTr()
 

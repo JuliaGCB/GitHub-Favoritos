@@ -1,18 +1,4 @@
-export class GithubUser{
-    static search(username){
-        const endpoint = `https://api.github.com/users/${username}`
-
-        return fetch(endpoint) //retornando uma promessa
-        .then(data => data.json()) //transformando em Json
-        .then(({ login, name, public_repos, followers })  => ({
-            login, //dados que vao seer mostrados
-            name,
-            public_repos,
-            followers
-        })) //desestruturei o then.
-    }
-}
-
+import { GithubUser } from "./GitHubUser.js";
 // class que vai conter a logica dos dados
 //como os dados serão estruturados
 export class Favorites{
@@ -27,10 +13,34 @@ export class Favorites{
         this.entries = JSON.parse( localStorage.getItem('@github-favorites:')) || [] //Json.parce() vai transformar no verdadeiro valor '[]' transforma em []
     }
 
+    save(){
+        localStorage.setItem('@github-favorites:', JSON.stringify(this.entries))
+    } //JSON.stringify() - transforma objetos em texto
+
     async add(username){ // vai buscar o username no github
+        try{ 
+        
+        const userExists = this.entries.find(entry => entry.login === username)
+        console.log(userExists)
+
+        if(userExists){
+            throw new Error ("Usuário já cadastrado")
+
+        }  
+
         const user = await GithubUser.search(username) //await é agurando uma promessa || Aqui ele vai aguardar essa promessa na linha dele
 
-        console.log(user)
+        if(user.login === undefined){
+            throw new Error('Usuário não encontrado!')
+        }
+
+        this.entries = [user, ...this.entries]
+        this.update()
+        this.save()
+
+        }catch(error){
+            alert(error.message)
+        }
     }
 
     delete(user) { //vai filtrar o arry se não verdadeiro ele vai apagar
@@ -39,6 +49,7 @@ export class Favorites{
 
         this.entries = filteredEntries
         this.update()
+        this.save()
     }
 }
 //classe que vai criar a visualização e eventos do HTMl
@@ -71,6 +82,7 @@ export class FavoritesView extends Favorites{
             row.querySelector('.user img').src = `https://github.com/${user.login}.png`;
             //vai mostrar a foto do usuario
             row.querySelector('.user img').alt = `Imagem de ${user.name}`
+             row.querySelector('.user a').href = `https://github.com/${user.login}`
             row.querySelector('.user p').textContent = user.name
             row.querySelector('.user span').textContent = user.login
             row.querySelector('.repositories').textContent = user.public_repos

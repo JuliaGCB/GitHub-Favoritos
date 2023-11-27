@@ -22,7 +22,7 @@ body{
 body *{
     font-family: var(--ff-primary);
 }
-.sr-only{ /*Classe para fazeer as coisas sumirem, forçando o sumiço*/
+.sr-only{ /*Classe para fazer as coisas sumirem, forçando o sumiço*/
    position: absolute;
    width: 1px;
    height: 1px;
